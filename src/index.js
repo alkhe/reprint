@@ -3,11 +3,9 @@ import 'colors';
 import path from 'path';
 import fs from 'fs-extra';
 import unit from 'unitex';
-import cheerio from 'cheerio';
-import he from 'he';
-
 import nico from './nico';
 import metagen from './metagen';
+import { log, warn } from './logger';
 
 import config from '../config';
 
@@ -18,29 +16,6 @@ let ratefmt = unit.formatter({ unit: 'B/s', base: 1024, atomic: true });
 let timefmt = unit.formatter({ unit: 's' });
 
 let time = () => process.hrtime()[0];
-
-let log = async (mes, extra) => {
-	let line = `${ mes }.`.magenta;
-	if (extra) {
-		line += ` (${ extra.yellow })`;
-	}
-	console.log(line);
-};
-
-let warn = async mes => {
-	console.log(`${ mes }.`.yellow);
-};
-
-let decodeDesc = html =>
-	he.decode(html.replace(/\<br\s*\/?\>/g, '\n').replace(/\<.*?\>/g, ''));
-
-let getMeta = async id => {
-	let [video, info] = await* [nico.video(id), nico.info(id)];
-	let $ = cheerio.load(video);
-	let el = $('#topVideoInfo > p.videoDescription.description');
-	info.description = decodeDesc(el.html());
-	return info;
-};
 
 void async () => {
 	try {
@@ -63,7 +38,7 @@ void async () => {
 
 		log('Logging In');
 		await loginp;
-		let [metap, flvp] = [getMeta(id), nico.flv(id)];
+		let [metap, flvp] = [nico.meta(id), nico.flv(id)];
 
 		log('Fetching Metadata');
 		let meta = await metap;
