@@ -1,11 +1,11 @@
-export default v =>
-`【http://nicovideo.jp/watch/${v.id}】
-【${v.uploader}】【${v.uploader}】【http://www.nicovideo.jp/user/${v.uploaderid}】
-${v.title}
+export default ({ id, uploader, uploaderid, title, desc }) =>
+`【http://nicovideo.jp/watch/${ id }】
+【${ uploader }】【${ uploader }】【http://www.nicovideo.jp/user/${ uploaderid }】
+${ title }
 
 ・・・
 
-${v.desc}
+${ desc }
 
 ・・・
 

@@ -1,8 +1,6 @@
 import 'colors';
 
 import path from 'path';
-import qs from 'querystring';
-
 import fs from 'fs-extra';
 import unit from 'unitex';
 import cheerio from 'cheerio';
@@ -10,26 +8,27 @@ import he from 'he';
 
 import nico from './nico';
 import metagen from './metagen';
-import config from './config';
+
+import config from '../config';
 
 let id = process.argv[2] || process.exit();
 
 let datafmt = unit.formatter({ unit: 'B', base: 1024, atomic: true });
-let ratefmt = unit.formatter({ unit: 'Bps', base: 1024, atomic: true });
+let ratefmt = unit.formatter({ unit: 'B/s', base: 1024, atomic: true });
 let timefmt = unit.formatter({ unit: 's' });
 
 let time = () => process.hrtime()[0];
 
 let log = async (mes, extra) => {
-	let line = (mes + '.').magenta;
+	let line = `${ mes }.`.magenta;
 	if (extra) {
-		line += ` (${extra.yellow})`;
+		line += ` (${ extra.yellow })`;
 	}
 	console.log(line);
 };
 
 let warn = async mes => {
-	console.log((mes + '.').yellow);
+	console.log(`${ mes }.`.yellow);
 };
 
 let decodeDesc = html =>
@@ -43,7 +42,7 @@ let getMeta = async id => {
 	return info;
 };
 
-(async () => {
+void async () => {
 	try {
 		let dldir = path.join('.', config.dl, id);
 
@@ -88,7 +87,7 @@ let getMeta = async id => {
 		log('Requesting Video', url);
 		await dirp;
 		let down = await nico.r.get(url);
-		await new Promise((resolve, reject) => {
+		await new Promise(resolve => {
 			down.on('response', res => {
 				let size = res.headers['content-length'];
 				log('Downloading Video', datafmt(size));
@@ -102,11 +101,11 @@ let getMeta = async id => {
 
 				let logStatus = () => {
 					processed += buffered;
-					let line = `${(processed / size * 100).toFixed(2)}%	`
-						+ `${datafmt(processed)}	`
-						+ `${ratefmt(buffered)}	`
-						+ `${timefmt(time() - start)}	`
-						+ `ETA ${timefmt((size - processed) * (time() - start) / processed)}`;
+					let line = `${ (processed / size * 100).toFixed(2) }%	`
+						+ `${ datafmt(processed) }	`
+						+ `${ ratefmt(buffered) }	`
+						+ `${ timefmt(time() - start) }	`
+						+ `ETA ${ timefmt((size - processed) * (time() - start) / processed) }`;
 					buffered = 0;
 					stdout.clearLine();
 					stdout.cursorTo(0);
@@ -118,6 +117,7 @@ let getMeta = async id => {
 				down.on('data', data => {
 					buffered += data.length;
 				}).on('end', () => {
+					logStatus();
 					clearInterval(logger);
 					console.log();
 					resolve();
@@ -129,4 +129,4 @@ let getMeta = async id => {
 	catch (e) {
 		warn(e);
 	}
-})();
+}();

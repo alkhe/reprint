@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": ":"
+    "test": ":",
+    "build": "gulp build"
   },
   "author": "synchronous",
   "license": "MIT",
@@ -18,5 +19,10 @@
     "request": "^2.64.0",
     "unitex": "^0.2.0",
     "xml2js": "^0.4.12"
+  },
+  "devDependencies": {
+    "babel-runtime": "^5.8.25",
+    "gulp": "^3.9.0",
+    "gulp-babel": "^5.2.1"
   }
 }
