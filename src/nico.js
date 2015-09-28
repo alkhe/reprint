@@ -26,7 +26,7 @@ let info = async id => {
 };
 
 let video = async id => {
-	let [{ body }] = await r.getAsync(`http://www.nicovideo.jp/watch/${id}`);
+	let [{ body }] = await r.getAsync(`http://www.nicovideo.jp/watch/${id}?watch_harmful=1`);
 	return body;
 };
 
